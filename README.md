@@ -104,6 +104,59 @@ Várias threads (tarefas concorrentes) tentam acessar uma área de memória comp
 * `mutex` (`Semaphore(1)`): Protege a atualização do contador de leitores (`readCount`).
 * `db` (`Semaphore(1)`): Garante exclusão mútua para escrita no vetor $M$. O primeiro leitor a chegar adquire o semáforo `db` para impedir que escritores modifiquem os dados enquanto houver leituras ativas, e o último leitor a sair o libera.
 
+---
+
+## 🚬 Letra d) Problema dos Fumantes
+
+### 1. Descrição do Problema
+
+O problema clássico de sincronização dos fumantes envolve **três threads fumantes** e **uma thread representante (agente)**.
+
+* Cada fumante possui estoques infinitos de apenas **um** ingrediente específico necessário para fazer e fumar cigarros (um tem apenas tabaco, outro tem apenas papel e o terceiro tem apenas fósforos).
+
+
+* Para fumar, são necessários **todos os três ingredientes** (tabaco, papel e fósforos).
+
+
+* O agente possui um estoque infinito dos três materiais, escolhe aleatoriamente dois ingredientes diferentes, coloca-os na mesa e desbloqueia o fumante que possui o ingrediente restante.
+
+
+* O fumante selecionado remove os ingredientes da mesa, faz o cigarro, fuma por um tempo simulado no fumódromo e, ao terminar, sinaliza para o agente que o ciclo pode recomeçar.
+
+
+
+### 2. Modelagem e Estrutura
+
+* **Threads:**
+* `Agente`: Executa ciclos onde sorteia dois ingredientes distintos e os disponibiliza na mesa, aguardando o término do consumo para reiniciar o ciclo.
+
+
+* `Fumante`: Três threads distintas (Tabaco, Papel e Fósforos) que permanecem bloqueadas até que o agente coloque na mesa os dois ingredientes que faltam para cada uma.
+
+
+
+
+* **Recursos Compartilhados e Região Crítica:**
+* A mesa de compartilhamento de ingredientes controlada por exclusão mútua.
+
+
+* **Mecanismos de Sincronização (Semáforos):**
+* `agenteSem` (`Semaphore(1)`): Controla o acesso do agente para colocar novos ingredientes, garantindo que ele só coloque novos itens após o fumante atual terminar de fumar.
+* `fumanteTabaco`, `fumantePapel`, `fumanteFosforo` (`Semaphore(0)`): Semáforos individuais para cada fumante, mantendo-os bloqueados até que os ingredientes correspondentes estejam disponíveis na mesa.
+
+
+* `mutex` (`Semaphore(1)`): Garante exclusão mútua ao manipular os recursos na mesa.
+
+
+
+---
+
+### **Instruções para Teste e Execução**
+
+1. Copie o código da **Letra d** fornecido anteriormente e cole-o no seu compilador Java online (ex.: [OnlineGDB](https://www.onlinegdb.com/online_java_compiler)).
+
+
+2. Clique em **Run** e acompanhe no terminal o agente sorteando os pares de ingredientes e o fumante correspondente pegando os itens, fumando e liberando o agente para o próximo ciclo.
 
 
 ---
